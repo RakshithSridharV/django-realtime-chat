@@ -80,8 +80,10 @@ body {
     const roomName = "{{ room }}";
     const username = "{{ username }}";
 
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        protocol + '://' + window.location.host + '/ws/chat/' + roomName + '/'
     );
 
     // Receive messages
@@ -101,7 +103,10 @@ body {
         </div>
         `;
 
-        messagesDiv.innerHTML += temp;
+        messagesDiv.insertAdjacentHTML('beforeend', temp);
+
+        // auto scroll
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
     };
 
     chatSocket.onclose = function(e) {

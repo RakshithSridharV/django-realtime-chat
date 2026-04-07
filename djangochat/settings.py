@@ -134,3 +134,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+#Security for production
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
