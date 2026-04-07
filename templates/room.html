@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.container {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.darker {
+  border-color: #ccc;
+  background-color: #ddd;
+}
+
+.container::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.time-left {
+  float: left;
+  color: #999;
+}
+</style>
+</head>
+
+<body>
+
+<h2>{{room}} - DjChat</h2>
+
+<div id="display"></div>
+
+<div class="container">
+    <style>
+    input[type=text] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    input[type=submit] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+        background-color: #45a049;
+    }
+    </style>
+
+    <form id="post-form">
+        {% csrf_token %}
+        <input type="hidden" id="username" value="{{username}}"/>
+        <input type="text" id="message" placeholder="Type a message..." />
+        <input type="submit" value="Send">
+    </form>
+</div>
+
+</body>
+
+<script>
+    const roomName = "{{ room }}";
+    const username = "{{ username }}";
+
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+    );
+
+    // Receive messages
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+
+        const message = data.message;
+        const user = data.username;
+
+        const messagesDiv = document.getElementById('display');
+
+        const temp = `
+        <div class="container darker">
+            <b>${user}</b>
+            <p>${message}</p>
+            <span class="time-left">now</span>
+        </div>
+        `;
+
+        messagesDiv.innerHTML += temp;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('WebSocket closed unexpectedly');
+    };
+
+    // Send message
+    document.getElementById('post-form').onsubmit = function(e){
+        e.preventDefault();
+
+        const messageInput = document.getElementById('message');
+        const message = messageInput.value;
+
+        if(message.trim() === '') return;
+
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'username': username
+        }));
+
+        messageInput.value = '';
+    };
+</script>
+
+</html>
