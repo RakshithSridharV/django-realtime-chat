@@ -23,11 +23,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-h7tq79yu(rbgal23nwfew%2ey6mvc7*$gq%6_d_lo315r$9*p$'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    "realtime-chat-u2bs.onrender.com",
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://realtime-chat-u2bs.onrender.com",
+]
+
+#Security for production
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -134,7 +142,3 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-#Security for production
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
